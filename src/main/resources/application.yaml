@@ -1,0 +1,24 @@
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/nicecow?useSSL=false&serverTimezone-UTC&useLegacyDatetimecode=false
+        username: root
+        password: $JDBCPASSWORD
+
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+        security:
+#            oauth2:
+#                client:
+#                    registration:
+#                        google:
+#                            clientId: $GOOGLECLIENTID
+#                            clientSecret: $GOOGLECLIENTSECRET
+#                            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+#
