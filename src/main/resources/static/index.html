@@ -1,69 +1,27 @@
 <!DOCTYPE html>
-<!--<html lang="en" xmlns:th="https://www.thymeleaf.org">-->
-<html lang="en">
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<script>
-    function statusChangeCallback(response) {
-        document.getElementById("word").innerText = response.status;
-        if (response.status === 'connected') {
-            document.getElementById("profile").style.display = "block";
-            document.getElementById("signIn").style.display = "none";
-            testAPI();
-        } else {
-            document.getElementById("signIn").style.display = "block";
-            document.getElementById("profile").style.display = "none";
-        }
-    }
-
-    function checkLoginState() {
-        FB.getLoginStatus(function(response) {
-            statusChangeCallback(response);
-        });
-    }
-
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: '4388254231191695',
-            status: true,
-            cookie: true,
-            xfbml: true,
-            version: 'v10.0'
-        });
-
-        FB.AppEvents.logPageView();
-
-        FB.getLoginStatus(function (response) {
-            statusChangeCallback(response);
-        });
-    }
-
-    function testAPI() {
-        FB.api('/me', function(response) {
-            document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
-        })
-    }
-</script>
-<div id="header">
+<div id="header" th:onbeforeprint="getLoginStatus()">
     <div id="signIn">
         <button>Sign in</button>
+
     </div>
     <div id="profile">
         <div id="profileDropDown">
             <button>Profile</button>
             <button>Other</button>
+            <button onclick="logout()">Log Out</button>
         </div>
     </div>
 </div>
+<script>
+    function getLoginStatus() {
 
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
-<p id="word"></p>
-<p id="status"></p>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-<!--<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=4388254231191695&autoLogAppEvents=1" nonce="3LbubxQB"></script>-->
+    }
+</script>
 </body>
 </html>
