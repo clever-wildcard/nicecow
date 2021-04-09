@@ -18,18 +18,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
-    private String name;
-    private String surname;
-    private String email;
     private String username;
-    private String password;
-
-    public User(String name, String surname, String email, String username, String password) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
+    private String primaryPhoneNumber;
+    private String backupPhoneNumber;
+    public User(String username, String primaryPhoneNumber, String backupPhoneNumber) {
         this.username = username;
-        this.password = password;
+        this.primaryPhoneNumber = primaryPhoneNumber;
+        this.backupPhoneNumber = backupPhoneNumber;
     }
 //    String phone;
 //    String verificationCode;
