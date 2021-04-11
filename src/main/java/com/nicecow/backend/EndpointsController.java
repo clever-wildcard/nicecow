@@ -24,12 +24,12 @@ public class EndpointsController {
         this.communicationRepository = communicationRepository;
     }
 
-    @PostMapping("/user")
+    @PostMapping("/api//user")
     public User createAccount(@RequestBody User user) {
         return this.userRepository.save(user);
     }
     
-    @GetMapping("/users")
+    @GetMapping("/api/users")
     public ResponseEntity<HashMap> getUsers() {
         List<JSONObject> jsonObjects = new ArrayList<>();
         for (User user: userRepository.findAll()) {
@@ -49,7 +49,7 @@ public class EndpointsController {
         return ResponseEntity.ok(jsonMap);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/api/user")
     public User getUser(@RequestBody Long userId) {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User not found")
@@ -57,7 +57,7 @@ public class EndpointsController {
         return user;
     }
 
-    @PutMapping("/user")
+    @PutMapping("/api/user")
     public User editUserInfo(@RequestBody JSONObject edittedUserInfo) {
 
         User user = userRepository.findById(Long.valueOf(edittedUserInfo.getAsString("userId"))).orElseThrow(() -> new ResourceNotFoundException("User id " + edittedUserInfo.get("userId") + " not found."));
@@ -96,7 +96,7 @@ public class EndpointsController {
           return this.userRepository.save(user);
     }
 
-    @DeleteMapping("/user")
+    @DeleteMapping("/api/user")
     public JSONObject removeUser(@RequestBody Long userId) {
         User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found " + userId)
         );
@@ -107,17 +107,19 @@ public class EndpointsController {
     }
 
     // Posts (you know, in case you search for 'Posts' instead of 'post'.)
-    @PostMapping("/post")
+    @PostMapping("/api/post")
     public Post createPost(@RequestBody Post post) {
         return this.postRepository.save(post);
     }
 
-    @GetMapping("/posts")
-    public List<Post> posts() {
-        return this.postRepository.findAll();
+    @GetMapping("/api/posts")
+    public JSONObject posts() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("posts", this.postRepository.findAll());
+        return jsonObject;
     }
 
-    @PutMapping("/post")
+    @PutMapping("/api/post")
     public Post editPost(@RequestBody Post edittedPost) {
         return this.postRepository.findById(edittedPost.getPostId())
                 .map(post -> {
@@ -127,7 +129,7 @@ public class EndpointsController {
                 }).orElseThrow(() -> new com.nicecow.backend.ResourceNotFoundException("The requested postId could not be found."));
     }
 
-    @DeleteMapping("/post")
+    @DeleteMapping("/api/post")
     public JSONObject deletePost(@RequestBody Long postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("The requested postId could not be found."));
         this.postRepository.delete(post);
@@ -136,7 +138,7 @@ public class EndpointsController {
         return jsonObject;
     }
 
-    @PostMapping("/communication")
+    @PostMapping("/api/communication")
     public Communication communicate(Communication communication) {
         return this.communicationRepository.save(communication);
     }
