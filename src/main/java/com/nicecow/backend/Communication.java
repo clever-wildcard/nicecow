@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Data
 @Entity
@@ -25,6 +24,7 @@ public class Communication {
     private Long postId;
     private LocalTime timestamp;
     private String reaction;
+    private boolean viewedByReceiver;
 
     public Communication(String words, Long postId, Long senderId, Long receiverId) {
         this.words = words;
@@ -32,6 +32,7 @@ public class Communication {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.timestamp = LocalTime.now();
+        this.viewedByReceiver = false;
     }
     public Communication(String words, boolean privateMessage, Long senderId, Long receiverId) {
         this.words = words;
@@ -39,12 +40,14 @@ public class Communication {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.timestamp = LocalTime.now();
+        this.viewedByReceiver = false;
     }
     public Communication(String reaction, Long senderId, Long receiverId) {
         this.reaction = reaction;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.timestamp = LocalTime.now();
+        this.viewedByReceiver = false;
     }
 
 

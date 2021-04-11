@@ -15,11 +15,13 @@ import java.util.List;
 public class EndpointsController {
     private UserRepository userRepository;
     public PostRepository postRepository;
+    public CommunicationRepository communicationRepository;
 
     @Autowired
-    public EndpointsController(UserRepository userRepository, PostRepository postRepository) {
+    public EndpointsController(UserRepository userRepository, PostRepository postRepository, CommunicationRepository communicationRepository) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.communicationRepository = communicationRepository;
     }
 
     @PostMapping("/user")
@@ -32,7 +34,7 @@ public class EndpointsController {
         List<JSONObject> jsonObjects = new ArrayList<>();
         for (User user: userRepository.findAll()) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", user.getName());
+            jsonObject.put("name", user.getUsername());
             jsonObject.put("id", user.getUserId());
             ArrayList<Post> userPosts = postRepository.findByUserId(user.getUserId());
             ArrayList<Long> userPostIds = new ArrayList<>();
@@ -58,25 +60,17 @@ public class EndpointsController {
     @PutMapping("/user")
     public User editUserInfo(@RequestBody JSONObject edittedUserInfo) {
 
-        userRepository.findById((Long) edittedUserInfo.get("userId")).orElseThrow(() -> new ResourceNotFoundException("User id " + edittedUserInfo.get("userId") + " not found."));
+        User user = userRepository.findById(Long.valueOf(edittedUserInfo.getAsString("userId"))).orElseThrow(() -> new ResourceNotFoundException("User id " + edittedUserInfo.get("userId") + " not found."));
 
-        if (edittedUserInfo.get("editingUsername").equals("True") && !userRepository.findByUsername(String.valueOf(edittedUserInfo.get("username")))) {
-            this.userRepository.findById(Long.valueOf(String.valueOf(edittedUserInfo.get("userId"))))
-                    .map(user -> {
-                        user.setUsername(String.valueOf(edittedUserInfo.get("username")));
-                        return this.userRepository.save(user);
-                    });
+        if (edittedUserInfo.get("editingUsername").equals("True") && !userRepository.findByUsername(edittedUserInfo.getAsString("username"))) {
+           user.setUsername(edittedUserInfo.getAsString("username"));
         }
         else {
             throw new ResourceTakenException("So sorry, that username is taken, please try another one.");
         }
 
-        if (edittedUserInfo.get("editingPrimaryPhoneNumber").equals("True") && !userRepository.findByPrimaryPhoneNumber(String.valueOf(edittedUserInfo.get("primaryPhoneNumber")))) {
-            this.userRepository.findById(Long.valueOf(String.valueOf(edittedUserInfo.get("userId"))))
-                    .map(user -> {
-                        user.setPrimaryPhoneNumber(String.valueOf(edittedUserInfo.get("primaryPhoneNumber")));
-                        return this.userRepository.save(user);
-                    });
+        if (edittedUserInfo.get("editingPrimaryPhoneNumber").equals("True") && !userRepository.findByPrimaryPhoneNumber(edittedUserInfo.getAsString("primaryPhoneNumber"))) {
+            user.setPrimaryPhoneNumber(edittedUserInfo.getAsString("primaryPhoneNumber"));
         }
         else {
             throw new ResourceTakenException("So sorry, that phone number is listed as primary on another account. " +
@@ -88,12 +82,8 @@ public class EndpointsController {
                     "That does not mean we can guarantee you a scammer-free experience. Please continue to be careful :). ");
         }
 
-        if (edittedUserInfo.get("editingBackupPhoneNumber").equals("True") && !userRepository.findByBackupPhoneNumber(String.valueOf(edittedUserInfo.get("backupPhoneNumber")))) {
-            this.userRepository.findById(Long.valueOf(String.valueOf(edittedUserInfo.get("userId"))))
-                    .map(user -> {
-                        user.setBackupPhoneNumber(String.valueOf(edittedUserInfo.get("backupPhoneNumber")));
-                        return this.userRepository.save(user);
-                    });
+        if (edittedUserInfo.get("editingBackupPhoneNumber").equals("True") && !userRepository.findByBackupPhoneNumber(edittedUserInfo.getAsString("backupPhoneNumber"))) {
+          user.setBackupPhoneNumber(edittedUserInfo.getAsString("backupPhoneNumber"));
         }
         else {
             throw new ResourceTakenException("So sorry, that phone number is listed as backup on another account. " +
@@ -103,10 +93,7 @@ public class EndpointsController {
                     "If you're interested in knowing why we're enforcing a one-backup-number-one-account rule, the answer is that we're hoping it makes it harder for scammers to scam the good people using this site. " +
                     "That does not mean we can guarantee you a scammer-free experience. Please continue to be careful :). ");
         }
-
-        User user = this.userRepository.findById((Long) edittedUserInfo.get("userId"));
-        return user;
-
+          return this.userRepository.save(user);
     }
 
     @DeleteMapping("/user")
@@ -115,7 +102,7 @@ public class EndpointsController {
         );
         this.userRepository.delete(user);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("delete", "User formerly associated with id " + userId +  " was deleted.");
+        jsonObject.put("deletionStatus", "User formerly associated with id " + userId +  " was deleted.");
         return jsonObject;
     }
 
@@ -137,9 +124,20 @@ public class EndpointsController {
                     post.setPostContent(edittedPost.getPostContent());
                     post.setPostTitle(edittedPost.getPostTitle());
                     return postRepository.save(post);
-                }).orElseGet()
+                }).orElseThrow(() -> new com.nicecow.backend.ResourceNotFoundException("The requested postId could not be found."));
     }
 
     @DeleteMapping("/post")
-    public String deletePost(@P)
+    public JSONObject deletePost(@RequestBody Long postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("The requested postId could not be found."));
+        this.postRepository.delete(post);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("deletionStatus", "Post formerly associated with id " + postId +  " was deleted.");
+        return jsonObject;
+    }
+
+    @PostMapping("/communication")
+    public Communication communicate(Communication communication) {
+        return this.communicationRepository.save(communication);
+    }
 }
