@@ -112,6 +112,7 @@ public class EndpointsController {
         return this.postRepository.save(post);
     }
 
+    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping("/api/posts")
     public JSONObject posts() {
         JSONObject jsonObject = new JSONObject();
