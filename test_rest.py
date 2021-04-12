@@ -10,7 +10,7 @@ import requests
 
 headers = {'Content-Type': 'application/json'}
 
-response = requests.post("http://localhost:8080/api/user",
+response = requests.post("http://localhost:8080/api/users",
                          json={'username': 'Anna',
                                'primaryPhoneNumber': '123-456-7890',
                                'backupPhoneNumber': '111-111-1111'},
@@ -23,7 +23,7 @@ print(response.headers)
 print(requests.get("http://localhost:8080/api/users",
                    headers={'Content-Type': 'application/json'}).json())
 
-print(requests.post("http://localhost:8080/api/post",
+print(requests.post("http://localhost:8080/api/posts",
                     headers={'Content-Type': 'application/json'},
                     json={'postContent': 'words', 'postTitle': 'cuz maybe', 'userId': response.json()['userId']}).json())
 

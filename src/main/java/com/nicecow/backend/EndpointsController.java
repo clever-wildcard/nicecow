@@ -24,7 +24,7 @@ public class EndpointsController {
         this.communicationRepository = communicationRepository;
     }
 
-    @PostMapping("/api//user")
+    @PostMapping("/api//users")
     public User createAccount(@RequestBody User user) {
         return this.userRepository.save(user);
     }
@@ -49,18 +49,18 @@ public class EndpointsController {
         return ResponseEntity.ok(jsonMap);
     }
 
-    @GetMapping("/api/user")
-    public User getUser(@RequestBody Long userId) {
+    @GetMapping("/api/users/{userId}")
+    public User getUser(@PathVariable Long userId) {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User not found")
         );
         return user;
     }
 
-    @PutMapping("/api/user")
-    public User editUserInfo(@RequestBody JSONObject edittedUserInfo) {
+    @PutMapping("/api/users/{userId}")
+    public User editUserInfo(@PathVariable Long userId, @RequestBody JSONObject edittedUserInfo) {
 
-        User user = userRepository.findById(Long.valueOf(edittedUserInfo.getAsString("userId"))).orElseThrow(() -> new ResourceNotFoundException("User id " + edittedUserInfo.get("userId") + " not found."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User id " + edittedUserInfo.get("userId") + " not found."));
 
         if (edittedUserInfo.get("editingUsername").equals("True") && !userRepository.findByUsername(edittedUserInfo.getAsString("username"))) {
            user.setUsername(edittedUserInfo.getAsString("username"));
@@ -96,8 +96,8 @@ public class EndpointsController {
           return this.userRepository.save(user);
     }
 
-    @DeleteMapping("/api/user")
-    public JSONObject removeUser(@RequestBody Long userId) {
+    @DeleteMapping("/api/users/{userId}")
+    public JSONObject removeUser(@PathVariable Long userId) {
         User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found " + userId)
         );
         this.userRepository.delete(user);
@@ -106,8 +106,9 @@ public class EndpointsController {
         return jsonObject;
     }
 
-    // Posts (you know, in case you search for 'Posts' instead of 'post'.)
-    @PostMapping("/api/post")
+    // Posts (you know, in case you search for 'Posts' instead of 'post'.)\
+    @CrossOrigin(origins = "http://localhost:8080")
+    @PostMapping("/api/posts")
     public Post createPost(@RequestBody Post post) {
         return this.postRepository.save(post);
     }
@@ -120,9 +121,9 @@ public class EndpointsController {
         return jsonObject;
     }
 
-    @PutMapping("/api/post")
-    public Post editPost(@RequestBody Post edittedPost) {
-        return this.postRepository.findById(edittedPost.getPostId())
+    @PutMapping("/api/posts/{postId}")
+    public Post editPost(@PathVariable Long postId, @RequestBody Post edittedPost) {
+        return this.postRepository.findById(postId)
                 .map(post -> {
                     post.setPostContent(edittedPost.getPostContent());
                     post.setPostTitle(edittedPost.getPostTitle());
@@ -130,8 +131,8 @@ public class EndpointsController {
                 }).orElseThrow(() -> new com.nicecow.backend.ResourceNotFoundException("The requested postId could not be found."));
     }
 
-    @DeleteMapping("/api/post")
-    public JSONObject deletePost(@RequestBody Long postId) {
+    @DeleteMapping("/api/posts/{postId}")
+    public JSONObject deletePost(@PathVariable Long postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("The requested postId could not be found."));
         this.postRepository.delete(post);
         JSONObject jsonObject = new JSONObject();
@@ -139,7 +140,7 @@ public class EndpointsController {
         return jsonObject;
     }
 
-    @PostMapping("/api/communication")
+    @PostMapping("/api/communications")
     public Communication communicate(Communication communication) {
         return this.communicationRepository.save(communication);
     }
