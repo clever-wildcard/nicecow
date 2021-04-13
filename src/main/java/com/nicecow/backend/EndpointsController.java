@@ -24,11 +24,16 @@ public class EndpointsController {
         this.communicationRepository = communicationRepository;
     }
 
-    @PostMapping("/api//users")
-    public User createAccount(@RequestBody User user) {
-        return this.userRepository.save(user);
+    @DeleteMapping("/api/users/{userId}")
+    public JSONObject removeUser(@PathVariable Long userId) {
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found " + userId)
+        );
+        this.userRepository.delete(user);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("deletionStatus", "User formerly associated with id " + userId +  " was deleted.");
+        return jsonObject;
     }
-    
+
     @GetMapping("/api/users")
     public ResponseEntity<HashMap> getUsers() {
         List<JSONObject> jsonObjects = new ArrayList<>();
@@ -55,6 +60,11 @@ public class EndpointsController {
                 () -> new ResourceNotFoundException("User not found")
         );
         return user;
+    }
+
+    @PostMapping("/api//users")
+    public User createAccount(@RequestBody User user) {
+        return this.userRepository.save(user);
     }
 
     @PutMapping("/api/users/{userId}")
@@ -96,24 +106,18 @@ public class EndpointsController {
           return this.userRepository.save(user);
     }
 
-    @DeleteMapping("/api/users/{userId}")
-    public JSONObject removeUser(@PathVariable Long userId) {
-        User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found " + userId)
-        );
-        this.userRepository.delete(user);
+    // Posts
+
+    @DeleteMapping("/api/posts/{postId}")
+    public JSONObject deletePost(@PathVariable Long postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("The requested postId could not be found."));
+        this.postRepository.delete(post);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("deletionStatus", "User formerly associated with id " + userId +  " was deleted.");
+        jsonObject.put("deletionStatus", "Post formerly associated with id " + postId +  " was deleted.");
         return jsonObject;
     }
 
-    // Posts (you know, in case you search for 'Posts' instead of 'post'.)\
-    @CrossOrigin(origins = "http://localhost:8080")
-    @PostMapping("/api/posts")
-    public Post createPost(@RequestBody Post post) {
-        return this.postRepository.save(post);
-    }
-
-    @CrossOrigin(origins = "http://localhost:8080")
+    @CrossOrigin(origins = "http://localhost:63342")
     @GetMapping("/api/posts")
     public JSONObject posts() {
         JSONObject jsonObject = new JSONObject();
@@ -121,6 +125,16 @@ public class EndpointsController {
         return jsonObject;
     }
 
+//    @CrossOrigin(origins = "http://localhost:63342")
+//    @GetMapping("/api/posts/{postId}")
+
+    @CrossOrigin(origins = "http://localhost:63342")
+    @PostMapping("/api/posts")
+    public Post createPost(@RequestBody Post post) {
+        return this.postRepository.save(post);
+    }
+
+    @CrossOrigin(origins = "http://localhost:63342")
     @PutMapping("/api/posts/{postId}")
     public Post editPost(@PathVariable Long postId, @RequestBody Post edittedPost) {
         return this.postRepository.findById(postId)
@@ -131,14 +145,7 @@ public class EndpointsController {
                 }).orElseThrow(() -> new com.nicecow.backend.ResourceNotFoundException("The requested postId could not be found."));
     }
 
-    @DeleteMapping("/api/posts/{postId}")
-    public JSONObject deletePost(@PathVariable Long postId) {
-        Post post = this.postRepository.findById(postId).orElseThrow(() -> new ResourceNotFoundException("The requested postId could not be found."));
-        this.postRepository.delete(post);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("deletionStatus", "Post formerly associated with id " + postId +  " was deleted.");
-        return jsonObject;
-    }
+    // Communications
 
     @PostMapping("/api/communications")
     public Communication communicate(Communication communication) {
