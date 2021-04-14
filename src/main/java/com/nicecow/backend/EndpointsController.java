@@ -34,6 +34,7 @@ public class EndpointsController {
         return jsonObject;
     }
 
+    @CrossOrigin(origins = "http://localhost:63342")
     @GetMapping("/api/users")
     public ResponseEntity<HashMap> getUsers() {
         List<JSONObject> jsonObjects = new ArrayList<>();
@@ -54,6 +55,7 @@ public class EndpointsController {
         return ResponseEntity.ok(jsonMap);
     }
 
+    @CrossOrigin(origins = "http://localhost:63342")
     @GetMapping("/api/users/{userId}")
     public User getUser(@PathVariable Long userId) {
         User user = this.userRepository.findById(userId).orElseThrow(

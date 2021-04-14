@@ -30,4 +30,4 @@ print(requests.post("http://localhost:8080/api/posts",
 print(requests.get("http://localhost:8080/api/users",
                    headers=headers).json())
 
-print(requests.get("http://localhost:8080/api/posts", headers=headers).json())
+print(requests.get("http://localhost:8080/api/posts", headers=headers).json()['posts'][0])
